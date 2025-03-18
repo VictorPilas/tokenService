@@ -8,7 +8,7 @@ import static org.mockito.Mockito.when;
 import com.example.tokenService.controller.TokenController;
 import com.example.tokenService.exception.TokenGenerationException;
 import com.example.tokenService.model.TokenResponse;
-import com.example.tokenService.service.AuthService;
+import com.example.tokenService.service.TokenService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,14 +20,14 @@ import org.springframework.http.ResponseEntity;
 public class TokenControllerTest {
 
     @Mock
-    private AuthService authService;
+    private TokenService authService;
 
     @InjectMocks
     private TokenController tokenController;
 
     @Test
     void testGetTokenSuccess() throws Exception {
-        TokenResponse mockResponse = new TokenResponse("mockToken", "February 21, 2018");
+        TokenResponse mockResponse = new TokenResponse("mockToken", "2025-03-18T19:18:16Z");
         when(authService.getTokenRespose()).thenReturn(mockResponse);
 
         ResponseEntity<TokenResponse> response = tokenController.getToken();

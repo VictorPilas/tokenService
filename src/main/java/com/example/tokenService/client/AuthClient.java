@@ -1,39 +1,28 @@
-package com.example.tokenService.service;
+package com.example.tokenService.client;
 
-import com.example.tokenService.model.TokenResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
+@Component
+@Slf4j
+@RequiredArgsConstructor
+public class AuthClient {
 
-@Service
-public class AuthService {
-
-    private final RestTemplate restTemplate;
-    private final String authUrl = "http://host.docker.internal:8080/token";
-
-    public AuthService(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
-
-    public TokenResponse getTokenRespose() throws Exception {
-        return new TokenResponse(getToken(),getTokenDate());
-    }
-
-    public String getTokenDate(){
-        return new SimpleDateFormat("MMMM dd, yyyy", new Locale("en")).format(new Date());
-    }
+    @Value("${auth.service.url:http://localhost:8080/token}")
+    private String authServiceUrl;
 
     public String getToken() throws Exception {
         try {
+            RestTemplate restTemplate = new RestTemplate();
             JSONObject json = new JSONObject();
             json.put("username", "auth-vivelibre");
             json.put("password", "password");
@@ -42,7 +31,7 @@ public class AuthService {
             headers.setContentType(MediaType.APPLICATION_JSON);
             HttpEntity<String> request = new HttpEntity<>(json.toString(), headers);
 
-            String jsonResponse = restTemplate.postForObject(authUrl, request, String.class);
+            String jsonResponse = restTemplate.postForObject(authServiceUrl, request, String.class);
             if (jsonResponse == null || jsonResponse.isEmpty()) {
                 throw new Exception("Empty response from authentication server");
             }
@@ -55,6 +44,4 @@ public class AuthService {
             throw new Exception("Error parsing authentication response", e);
         }
     }
-
-
 }

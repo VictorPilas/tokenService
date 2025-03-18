@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  auth-service:
+    image: ${AUTH_SERVICE_IMAGE}
+    container_name: auth-service
+    ports:
+      - "${AUTH_SERVICE_PORT}:8080"
+    restart: always
+
+  token-service:
+    image: ${TOKEN_SERVICE_IMAGE}
+    container_name: token-service
+    ports:
+      - "${TOKEN_SERVICE_PORT}:8081"
+    environment:
+      - SPRING_SECURITY_USER_NAME=${TOKEN_SERVICE_USER}
+      - SPRING_SECURITY_USER_PASSWORD=${TOKEN_SERVICE_PASSWORD}
+      - AUTH_SERVICE_URL=http://auth-service:8080/token
+    depends_on:
+      - auth-service
+    restart: always
+
